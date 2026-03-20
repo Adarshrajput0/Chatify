@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
+import cors from "cors";
 import authRouter from "./routes/auth.router.js";
 import messageRouter from "./routes/message.router.js";
 import { connectDB } from "./lib/db.js";
@@ -11,6 +12,7 @@ const __dirname = path.resolve();
 const PORT = ENV.PORT || 3000;
 
 app.use(express.json());
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 //req.body
 app.use("/api/auth", authRouter);

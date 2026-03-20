@@ -4,12 +4,12 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import { ENV } from "../lib/env.js";
 import cloudinary from "../lib/cloudinary.js";
-export const singup = async (req, res) => {
-  const { fullname, email, password } = req.body;
+export const signup = async (req, res) => {
+  const { fullName, email, password } = req.body;
 
   try {
     //validation
-    if (!fullname || !email || !password) {
+    if (!fullName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
     //password validation
@@ -34,7 +34,7 @@ export const singup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      fullname,
+      fullName,
       email,
       password: hashedPassword,
     });
@@ -48,7 +48,7 @@ export const singup = async (req, res) => {
 
       res.status(201).json({
         _id: newUser._id,
-        fullname: newUser.fullname,
+        fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
       });
@@ -56,7 +56,7 @@ export const singup = async (req, res) => {
       try {
         await sendwelcomeEmail(
           savedUser.email,
-          savedUser.fullname,
+          savedUser.fullName,
           ENV.CLIENT_URL,
         );
       } catch (error) {
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
     generateToken(user._id, res);
     res.status(200).json({
       _id: user._id,
-      fullname: user.fullname,
+      fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
     });
