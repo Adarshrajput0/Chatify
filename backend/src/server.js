@@ -13,10 +13,12 @@ const PORT = ENV.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
 app.use(cookieParser());
 //req.body
 app.use("/api/auth", authRouter);
 app.use("/api/messages", messageRouter);
+console.log("CLIENT_URL:", ENV.CLIENT_URL);
 
 // make ready for deployment
 if (ENV.NODE_ENV === "production") {
