@@ -50,7 +50,7 @@ function ContactList() {
                 <img src={contact.profilePic || "/avatar.png"} />
               </div>
             </div>
-            <h4 className="text-slate-200 font-medium">{contact.fullname}</h4>
+            <h4 className="text-slate-200 font-medium">{contact.fullName}</h4>
           </div>
         </div>
       ))}

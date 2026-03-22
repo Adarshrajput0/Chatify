@@ -70,10 +70,10 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-    }
+    // const receiverSocketId = getReceiverSocketId(receiverId);
+    // if (receiverSocketId) {
+    //   io.to(receiverSocketId).emit("newMessage", newMessage);
+    // }
     //todo: send message in real-time if user is online - socke.io
     res.status(201).json(newMessage);
   } catch (error) {
