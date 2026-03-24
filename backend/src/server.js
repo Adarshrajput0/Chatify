@@ -29,7 +29,7 @@ if (ENV.NODE_ENV === "production") {
   });
 }
 
-server.listen(PORT, "0.0.0.0", () => {
+server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   connectDB();
 });
