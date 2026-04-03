@@ -1,8 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
-import cors from "cors";
 import { fileURLToPath } from "url";
+import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.router.js";
@@ -11,35 +11,28 @@ import { connectDB } from "./lib/db.js";
 import { ENV } from "./lib/env.js";
 import { app, server } from "./lib/socket.js";
 
-const __dirname = path.resolve();
-
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+// Fix __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5002;
 
-app.use(express.json({ limit: "5mb" })); // req.body
+app.use(express.json({ limit: "5mb" }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// make ready for deployment
-// if (ENV.NODE_ENV === "production") {
-//   app.use(express.static(path.join(__dirname, "../../frontend", "dist")));
+if (process.env.NODE_ENV === "production") {
+  // __dirname = /opt/render/project/src/backend/src
+  // so go up 2 levels to reach repo root, then into frontend/dist
+  const frontendPath = path.join(__dirname, "../../frontend/dist");
 
-//   app.get("*", (_, res) => {
-//     res.sendFile(path.join(__dirname, "../../frontend", "dist", "index.html"));
-//   });
-// }
-
-if (ENV.NODE_ENV === "production") {
-  const frontendDist = path.join(__dirname, "../../../frontend/dist");
-
-  app.use(express.static(frontendDist));
+  app.use(express.static(frontendPath));
 
   app.get("*", (_, res) => {
-    res.sendFile(path.join(frontendDist, "index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
