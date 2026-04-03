@@ -4,8 +4,6 @@ import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 
-dotenv.config();
-
 import authRoutes from "./routes/auth.router.js";
 import messageRoutes from "./routes/message.router.js";
 import { connectDB } from "./lib/db.js";
