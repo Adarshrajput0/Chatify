@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 
 axiosInstance.defaults.withCredentials = true;
 const BASE_URL =
-  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+  import.meta.env.MODE === "development" ? "http://localhost:5002" : "/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
