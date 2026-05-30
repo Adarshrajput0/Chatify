@@ -22,7 +22,7 @@ import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 
 function ContactList() {
-  const { getAllContacts, allContacts, setSelectedUser, isUsersLoading } =
+  const { getAllContacts, allContacts, setSelectedUser, isUsersLoading, unreadMessages } =
     useChatStore();
   const { onlineUsers } = useAuthStore();
 
@@ -50,7 +50,14 @@ function ContactList() {
                 <img src={contact.profilePic || "/avatar.png"} />
               </div>
             </div>
-            <h4 className="text-slate-200 font-medium">{contact.fullName}</h4>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-slate-200 font-medium truncate">{contact.fullName}</h4>
+            </div>
+            {unreadMessages[contact._id] > 0 && (
+              <span className="badge badge-primary badge-sm font-bold">
+                {unreadMessages[contact._id]}
+              </span>
+            )}
           </div>
         </div>
       ))}

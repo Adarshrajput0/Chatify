@@ -5,7 +5,7 @@ import NoChatsFound from "./NoChatsFound";
 import { useAuthStore } from "../store/useAuthStore";
 
 function ChatsList() {
-  const { getMyChatPartners, chats, isUsersLoading, setSelectedUser } =
+  const { getMyChatPartners, chats, isUsersLoading, setSelectedUser, unreadMessages } =
     useChatStore();
   const { onlineUsers } = useAuthStore();
 
@@ -35,9 +35,33 @@ function ChatsList() {
                 />
               </div>
             </div>
-            <h4 className="text-slate-200 font-medium truncate">
-              {chat.fullName}
-            </h4>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h4 className="text-slate-200 font-medium truncate">
+                  {chat.fullName}
+                </h4>
+                {chat.lastMessage && (
+                  <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
+                    {new Date(chat.lastMessage.createdAt).toLocaleTimeString(undefined, {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                )}
+              </div>
+              {chat.lastMessage && (
+                <p className="text-sm text-slate-400 truncate mt-0.5">
+                  {chat.lastMessage.image && !chat.lastMessage.text
+                    ? "📷 Photo"
+                    : chat.lastMessage.text || ""}
+                </p>
+              )}
+            </div>
+            {unreadMessages[chat._id] > 0 && (
+              <span className="badge badge-primary badge-sm font-bold">
+                {unreadMessages[chat._id]}
+              </span>
+            )}
           </div>
         </div>
       ))}
