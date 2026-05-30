@@ -9,6 +9,7 @@ export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
   message: [],
+  unreadMessages: {},
   activeTab: "chats",
   selectedUser: null,
   isUsersLoading: false,
@@ -21,7 +22,13 @@ export const useChatStore = create((set, get) => ({
   },
 
   setActiveTab: (tab) => set({ activeTab: tab }),
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
+  setSelectedUser: (selectedUser) => set((state) => {
+    const newUnread = { ...state.unreadMessages };
+    if (selectedUser) {
+      newUnread[selectedUser._id] = 0;
+    }
+    return { selectedUser, unreadMessages: newUnread };
+  }),
 
   getAllContacts: async () => {
     set({ isUsersLoading: true });
@@ -91,18 +98,28 @@ export const useChatStore = create((set, get) => ({
   },
 
   subscribeToMessages: () => {
-    const { selectedUser, isSoundEnabled } = get();
-    if (!selectedUser) return;
-
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+    
+    // Prevent duplicate listeners
+    socket.off("newMessage");
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+      const { selectedUser, isSoundEnabled, messages, unreadMessages } = get();
 
-      const currentMessages = get().messages;
-      set({ messages: [...currentMessages, newMessage] });
+      const isMessageSentFromSelectedUser =
+        selectedUser && newMessage.senderId === selectedUser._id;
+
+      if (isMessageSentFromSelectedUser) {
+        set({ messages: [...messages, newMessage] });
+      } else {
+        set({
+          unreadMessages: {
+            ...unreadMessages,
+            [newMessage.senderId]: (unreadMessages[newMessage.senderId] || 0) + 1,
+          },
+        });
+      }
 
       if (isSoundEnabled) {
         const notificationSound = new Audio("/sounds/notification.mp3");

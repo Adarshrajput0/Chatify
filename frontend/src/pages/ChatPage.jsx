@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
 import ProfileHeader from "../components/ProfileHeader";
@@ -8,12 +9,18 @@ import NoConversationPlaceholder from "../components/NoConversationPlaceholder";
 import ChatContainer from "../components/ChatContainer";
 
 function ChatPage() {
-  const { activeTab, selectedUser } = useChatStore();
+  const { activeTab, selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+
+  useEffect(() => {
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }, [subscribeToMessages, unsubscribeFromMessages]);
+
   return (
-    <div className="relative w-full max-w-6xl h-[800px]">
+    <div className="relative w-full max-w-6xl h-[calc(100vh-6rem)] md:h-[800px]">
       <BorderAnimatedContainer>
-        {/* LEft SIde */}
-        <div className="w-80 bg-slate-800/50 backdrop-blur-sm flex flex-col">
+        {/* Left Side */}
+        <div className={`w-full bg-slate-800/50 backdrop-blur-sm flex-col ${selectedUser ? "hidden" : "flex"}`}>
           <ProfileHeader />
           <ActiveTabSwitch />
 
@@ -23,7 +30,7 @@ function ChatPage() {
         </div>
 
         {/* Right Side */}
-        <div className="flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm">
+        <div className={`w-full flex-col bg-slate-900/50 backdrop-blur-sm ${selectedUser ? "flex" : "hidden"}`}>
           {selectedUser ? <ChatContainer /> : <NoConversationPlaceholder />}
         </div>
       </BorderAnimatedContainer>

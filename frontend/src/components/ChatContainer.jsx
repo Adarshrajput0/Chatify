@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import ChatHeader from "./ChatHeader";
 import NoChatHistoryPlaceholder from "./NoChatHistoryPlaceholder";
 import MessageInput from "./MessageInput";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 function ChatContainer() {
   const {
@@ -12,24 +13,14 @@ function ChatContainer() {
     getMessagesByUserId,
     messages,
     isMessagesLoading,
-    subscribeToMessages,
-    unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     getMessagesByUserId(selectedUser._id);
-    subscribeToMessages();
-
-    // clean up
-    return () => unsubscribeFromMessages();
-  }, [
-    selectedUser,
-    getMessagesByUserId,
-    subscribeToMessages,
-    unsubscribeFromMessages,
-  ]);
+  }, [selectedUser, getMessagesByUserId]);
 
   useEffect(() => {
     if (messageEndRef.current) {
@@ -59,7 +50,8 @@ function ChatContainer() {
                     <img
                       src={msg.image}
                       alt="Shared"
-                      className="rounded-lg h-48 object-cover"
+                      className="rounded-lg h-48 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => setPreviewImage(msg.image)}
                     />
                   )}
                   {msg.text && <p className="mt-2">{msg.text}</p>}
@@ -82,6 +74,13 @@ function ChatContainer() {
         )}
       </div>
       <MessageInput />
+
+      {previewImage && (
+        <ImagePreviewModal
+          imageUrl={previewImage}
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
     </>
   );
 }

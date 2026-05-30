@@ -90,23 +90,51 @@ export const getChatPartners = async (req, res) => {
     // find all the messages where the logged-in user is either sender or receiver
     const messages = await Message.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
-    });
+    }).sort({ createdAt: -1 });
 
-    const chatPartnerIds = [
-      ...new Set(
-        messages.map((msg) =>
-          msg.senderId.toString() === loggedInUserId.toString()
-            ? msg.receiverId.toString()
-            : msg.senderId.toString(),
-        ),
-      ),
-    ];
+    // Build a map: partnerId -> lastMessage (first occurrence since sorted desc)
+    const partnerMap = new Map();
+    for (const msg of messages) {
+      const partnerId =
+        msg.senderId.toString() === loggedInUserId.toString()
+          ? msg.receiverId.toString()
+          : msg.senderId.toString();
+
+      if (!partnerMap.has(partnerId)) {
+        partnerMap.set(partnerId, msg);
+      }
+    }
+
+    const chatPartnerIds = [...partnerMap.keys()];
 
     const chatPartners = await User.find({
       _id: { $in: chatPartnerIds },
     }).select("-password");
 
-    res.status(200).json(chatPartners);
+    // Merge user info with lastMessage
+    const result = chatPartners.map((user) => {
+      const lastMsg = partnerMap.get(user._id.toString());
+      return {
+        ...user.toObject(),
+        lastMessage: lastMsg
+          ? {
+              text: lastMsg.text,
+              image: lastMsg.image,
+              createdAt: lastMsg.createdAt,
+              senderId: lastMsg.senderId,
+            }
+          : null,
+      };
+    });
+
+    // Sort by lastMessage time (most recent first)
+    result.sort((a, b) => {
+      const aTime = a.lastMessage ? new Date(a.lastMessage.createdAt) : 0;
+      const bTime = b.lastMessage ? new Date(b.lastMessage.createdAt) : 0;
+      return bTime - aTime;
+    });
+
+    res.status(200).json(result);
   } catch (error) {
     console.error("Error in getChatPartners: ", error.message);
     res.status(500).json({ error: "Internal server error" });
