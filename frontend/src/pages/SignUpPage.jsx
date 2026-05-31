@@ -1,34 +1,15 @@
-import { useState } from "react";
-import { useAuthStore } from "../store/useAuthStore";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
-import {
-  MessageCircleIcon,
-  LockIcon,
-  MailIcon,
-  UserIcon,
-  LoaderIcon,
-} from "lucide-react";
+import { MessageCircleIcon } from "lucide-react";
 import { Link } from "react-router";
+import { SignUp } from "@clerk/react";
 
 function SignUpPage() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-  });
-  const { signup, isSigningUp } = useAuthStore();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    signup(formData);
-  };
-
   return (
     <div className="w-full flex items-center justify-center p-4 bg-slate-900">
-      <div className="relative w-full max-w-6xl md:h-[800px] h-[650px]">
+      <div className="relative w-full max-w-6xl md:h-[800px] h-auto">
         <BorderAnimatedContainer>
           <div className="w-full flex flex-col md:flex-row">
-            {/* FORM CLOUMN - LEFT SIDE */}
+            {/* FORM COLUMN - LEFT SIDE */}
             <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-slate-600/30">
               <div className="w-full max-w-md">
                 {/* HEADING TEXT */}
@@ -40,75 +21,31 @@ function SignUpPage() {
                   <p className="text-slate-400">Sign up for a new account</p>
                 </div>
 
-                {/* FORM */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* FULL NAME */}
-                  <div>
-                    <label className="auth-input-label">Full Name</label>
-                    <div className="relative">
-                      <UserIcon className="auth-input-icon" />
-
-                      <input
-                        type="text"
-                        value={formData.fullName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, fullName: e.target.value })
-                        }
-                        className="input"
-                        placeholder="John Doe"
-                      />
-                    </div>
-                  </div>
-
-                  {/* EMAIL INPUT */}
-                  <div>
-                    <label className="auth-input-label">Email</label>
-                    <div className="relative">
-                      <MailIcon className="auth-input-icon" />
-
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        className="input"
-                        placeholder="johndoe@gmail.com"
-                      />
-                    </div>
-                  </div>
-
-                  {/* PASSWORD INPUT */}
-                  <div>
-                    <label className="auth-input-label">Password</label>
-                    <div className="relative">
-                      <LockIcon className="auth-input-icon" />
-
-                      <input
-                        type="password"
-                        value={formData.password}
-                        onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
-                        }
-                        className="input"
-                        placeholder="Enter your password"
-                      />
-                    </div>
-                  </div>
-
-                  {/* SUBMIT BUTTON */}
-                  <button
-                    className="auth-btn"
-                    type="submit"
-                    disabled={isSigningUp}
-                  >
-                    {isSigningUp ? (
-                      <LoaderIcon className="w-full h-5 animate-spin text-center" />
-                    ) : (
-                      "Create Account"
-                    )}
-                  </button>
-                </form>
+                {/* CLERK SIGN UP */}
+                <div className="flex justify-center">
+                  <SignUp
+                    forceRedirectUrl="/"
+                    appearance={{
+                      elements: {
+                        card: "bg-transparent shadow-none",
+                        headerTitle: "hidden",
+                        headerSubtitle: "hidden",
+                        socialButtonsBlockButton:
+                          "bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 transition-colors",
+                        formButtonPrimary:
+                          "bg-cyan-600 hover:bg-cyan-700 text-white font-semibold w-full py-2.5 rounded-lg transition-colors",
+                        formFieldInput:
+                          "bg-slate-800 border-slate-700 text-slate-100 focus:border-cyan-500 focus:ring-cyan-500/20 rounded-lg",
+                        formFieldLabel: "text-slate-300 text-sm font-medium",
+                        footerActionLink: "text-cyan-400 hover:text-cyan-300",
+                        identityPreviewEditButton: "text-cyan-400",
+                        dividerLine: "bg-slate-700",
+                        dividerText: "text-slate-500",
+                        footer: "hidden",
+                      },
+                    }}
+                  />
+                </div>
 
                 <div className="mt-6 text-center">
                   <Link to="/login" className="auth-link">
@@ -118,7 +55,7 @@ function SignUpPage() {
               </div>
             </div>
 
-            {/* FORM ILLUSTRATION - RIGHT SIDE */}
+            {/* ILLUSTRATION - RIGHT SIDE */}
             <div className="hidden md:w-1/2 md:flex items-center justify-center p-6 bg-gradient-to-bl from-slate-800/20 to-transparent">
               <div>
                 <img
@@ -130,7 +67,6 @@ function SignUpPage() {
                   <h3 className="text-xl font-medium text-cyan-400">
                     Start Your Journey Today
                   </h3>
-
                   <div className="mt-4 flex justify-center gap-4">
                     <span className="auth-badge">Free</span>
                     <span className="auth-badge">Easy Setup</span>
@@ -145,4 +81,6 @@ function SignUpPage() {
     </div>
   );
 }
+
 export default SignUpPage;
+

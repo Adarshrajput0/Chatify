@@ -1,11 +1,13 @@
-import { XIcon, ArrowLeft } from "lucide-react";
+import { XIcon, ArrowLeft, Video } from "lucide-react";
 import { useChatStore } from "../store/useChatStore";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import { useCallStore } from "../store/useCallStore";
 
 function ChatHeader() {
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers } = useAuthStore();
+  const { startCall } = useCallStore();
   const isOnline = onlineUsers.includes(selectedUser._id);
 
   useEffect(() => {
@@ -47,6 +49,18 @@ function ChatHeader() {
         </div>
       </div>
 
+      <button
+        onClick={() => isOnline && startCall(selectedUser)}
+        disabled={!isOnline}
+        className={`p-2.5 rounded-full transition-all cursor-pointer shadow-md ${
+          isOnline
+            ? "bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500 hover:text-slate-900 hover:shadow-cyan-500/20"
+            : "bg-slate-800/50 text-slate-500 cursor-not-allowed opacity-50"
+        }`}
+        title={isOnline ? "Start Video Call" : "User is offline"}
+      >
+        <Video className="w-5 h-5" />
+      </button>
     </div>
   );
 }
