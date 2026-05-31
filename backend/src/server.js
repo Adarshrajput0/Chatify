@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
-import dotenv from "dotenv";
+import { clerkMiddleware } from "@clerk/express";
 
 import authRoutes from "./routes/auth.router.js";
 import messageRoutes from "./routes/message.router.js";
@@ -17,6 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5002;
 
+app.use(clerkMiddleware());
 app.use(express.json({ limit: "5mb" }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(cookieParser());

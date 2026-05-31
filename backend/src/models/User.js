@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    clerkId: {
+      type: String,
+      unique: true,
+      sparse: true, // allows null/undefined without uniqueness conflict
+    },
     email: {
       type: String,
       required: true,
@@ -13,8 +18,8 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
       minlength: 6,
+      default: null,
     },
     profilePic: {
       type: String,

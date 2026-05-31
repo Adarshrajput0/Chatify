@@ -1,10 +1,5 @@
 import express from "express";
-import {
-  signup,
-  login,
-  logout,
-  updateProfile,
-} from "../controllers/auth.controller.js";
+import { checkAuth, updateProfile } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { arcjetProtection } from "../middleware/arcjet.middleware.js";
 
@@ -12,16 +7,10 @@ const router = express.Router();
 
 router.use(arcjetProtection);
 
-router.post("/signup", signup);
+// Verify Clerk token + sync user into MongoDB, return the user object
+router.get("/check", protectRoute, checkAuth);
 
-router.post("/login", login);
-
-router.post("/logout", logout);
-
+// Update profile picture (Cloudinary upload)
 router.put("/update-profile", protectRoute, updateProfile);
-
-router.get("/check", protectRoute, (req, res) =>
-  res.status(200).json(req.user),
-);
 
 export default router;

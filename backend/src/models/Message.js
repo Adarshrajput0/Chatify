@@ -20,6 +20,19 @@ const messageSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    messageType: {
+      type: String,
+      enum: ["text", "call"],
+      default: "text",
+    },
+    callStatus: {
+      type: String,
+      enum: ["completed", "missed", "declined"],
+    },
+    callDuration: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );

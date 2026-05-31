@@ -122,6 +122,9 @@ export const getChatPartners = async (req, res) => {
               image: lastMsg.image,
               createdAt: lastMsg.createdAt,
               senderId: lastMsg.senderId,
+              messageType: lastMsg.messageType,
+              callStatus: lastMsg.callStatus,
+              callDuration: lastMsg.callDuration,
             }
           : null,
       };
@@ -137,6 +140,42 @@ export const getChatPartners = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error("Error in getChatPartners: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  try {
+    const { id: messageId } = req.params;
+    const userId = req.user._id;
+
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    if (message.senderId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "You can only delete your own messages" });
+    }
+
+    await Message.findByIdAndDelete(messageId);
+
+    // Notify the receiver
+    const receiverSocketId = getReceiverSocketId(message.receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("messageDeleted", messageId);
+    }
+    
+    // Notify the sender (for other devices/tabs)
+    const senderSocketId = getReceiverSocketId(message.senderId);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("messageDeleted", messageId);
+    }
+
+    res.status(200).json({ message: "Message deleted successfully", messageId });
+  } catch (error) {
+    console.error("Error in deleteMessage controller:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };

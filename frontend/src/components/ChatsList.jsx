@@ -50,10 +50,24 @@ function ChatsList() {
                 )}
               </div>
               {chat.lastMessage && (
-                <p className="text-sm text-slate-400 truncate mt-0.5">
-                  {chat.lastMessage.image && !chat.lastMessage.text
-                    ? "📷 Photo"
-                    : chat.lastMessage.text || ""}
+                <p className="text-sm text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
+                  {chat.lastMessage.messageType === "call" ? (
+                    chat.lastMessage.callStatus === "missed" || chat.lastMessage.callStatus === "declined" ? (
+                      <>
+                        <span className="text-rose-500 text-xs">📞</span>
+                        <span className="text-rose-500 font-medium">Missed call</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-cyan-500 text-xs">📹</span>
+                        <span>Video call</span>
+                      </>
+                    )
+                  ) : chat.lastMessage.image && !chat.lastMessage.text ? (
+                    "📷 Photo"
+                  ) : (
+                    chat.lastMessage.text || ""
+                  )}
                 </p>
               )}
             </div>
