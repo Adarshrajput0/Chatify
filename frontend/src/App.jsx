@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useCallStore } from "./store/useCallStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PageLoader from "./components/PageLoader";
 import { Toaster } from "react-hot-toast";
 import VideoCallOverlay from "./components/VideoCallOverlay";
@@ -14,7 +14,16 @@ import { axiosInstance } from "./lib/axios";
 function App() {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const { checkAuth, logout, isCheckingAuth, authUser, socket } = useAuthStore();
+  const [clerkTimedOut, setClerkTimedOut] = useState(false);
   const { initCallListeners, cleanupCallListeners } = useCallStore();
+
+  // If Clerk hasn't loaded in 10s (bad publishable key / network issue), show error
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded) setClerkTimedOut(true);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [isLoaded]);
 
   // Sync Clerk session → backend session
   useEffect(() => {
@@ -47,6 +56,25 @@ function App() {
       return () => cleanupCallListeners(socket);
     }
   }, [socket, initCallListeners, cleanupCallListeners]);
+
+  // Show error if Clerk timed out (likely a bad publishable key in production)
+  if (clerkTimedOut) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-white gap-4">
+        <p className="text-2xl font-bold text-red-400">⚠ Authentication Failed</p>
+        <p className="text-slate-400 text-center max-w-sm">
+          The authentication service could not be reached. This is usually caused by a missing or
+          invalid <code className="text-pink-400">VITE_CLERK_PUBLISHABLE_KEY</code> environment variable.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-pink-500 hover:bg-pink-600 rounded-lg font-semibold transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   // Show loader while Clerk is loading or while we are checking auth with the backend
   if (!isLoaded || isCheckingAuth) return <PageLoader />;
