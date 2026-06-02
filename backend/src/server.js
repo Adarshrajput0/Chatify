@@ -17,9 +17,25 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5002;
 
+const allowedOrigins = ENV.CLIENT_URL
+  ? [ENV.CLIENT_URL]
+  : ["http://localhost:5173", "http://localhost:5174"];
+
 app.use(clerkMiddleware());
 app.use(express.json({ limit: "5mb" }));
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
@@ -32,8 +48,17 @@ if (process.env.NODE_ENV === "production") {
 
   app.use(express.static(frontendPath));
 
-  app.get(/.*/, (_, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+  // Catch-all: serve index.html for any unmatched route (SPA support)
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api") || req.path.startsWith("/socket.io")) {
+      return next();
+    }
+    res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+      if (err) {
+        console.error("Error serving index.html:", err);
+        res.status(500).send("Internal Server Error");
+      }
+    });
   });
 }
 

@@ -8,9 +8,19 @@ import Message from "../models/Message.js";
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = ENV.CLIENT_URL
+  ? [ENV.CLIENT_URL]
+  : ["http://localhost:5173", "http://localhost:5174"];
+
 const io = new Server(server, {
   cors: {
-    origin: [ENV.CLIENT_URL],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
   },
 });
