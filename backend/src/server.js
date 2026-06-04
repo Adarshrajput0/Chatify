@@ -24,7 +24,8 @@ const PORT = process.env.PORT || 5003;
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://chatifyy-youandi.onrender.com"
+  "https://chatifyy-youandi.onrender.com",
+  `http://localhost:${PORT}`
 ];
 
 app.use(clerkMiddleware());
@@ -46,6 +47,11 @@ app.use(
   }),
 );
 app.use(cookieParser());
+
+// Ignore harmless Chrome devtools warnings
+app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) => {
+  res.json({});
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
