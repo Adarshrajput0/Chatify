@@ -15,11 +15,17 @@ import { app, server } from "./lib/socket.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5003;
 
-const allowedOrigins = ENV.CLIENT_URL
-  ? [ENV.CLIENT_URL]
-  : ["http://localhost:5173", "http://localhost:5174"];
+// const allowedOrigins = ENV.CLIENT_URL
+//   ? [ENV.CLIENT_URL]
+//   : ["http://localhost:5173", "http://localhost:5174"];
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://chatifyy-youandi.onrender.com"
+];
 
 app.use(clerkMiddleware());
 app.use(express.json({ limit: "5mb" }));
@@ -28,13 +34,16 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+      if (
+        allowedOrigins.includes(origin) ||
+        process.env.NODE_ENV !== "production"
+      ) {
         return callback(null, true);
       }
       callback(new Error(`CORS: origin ${origin} not allowed`));
     },
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 
