@@ -8,9 +8,13 @@ import Message from "../models/Message.js";
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = ENV.CLIENT_URL
-  ? [ENV.CLIENT_URL]
-  : ["http://localhost:5173", "http://localhost:5174"];
+const PORT = process.env.PORT || 5003;
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://chatifyy-youandi.onrender.com",
+  `http://localhost:${PORT}`
+];
 
 const io = new Server(server, {
   cors: {
