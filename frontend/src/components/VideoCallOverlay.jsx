@@ -27,12 +27,18 @@ function VideoCallOverlay() {
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
+      localVideoRef.current.play().catch((err) => {
+        console.error("Local video play failed:", err);
+      });
     }
   }, [localStream, callState]);
 
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
+      remoteVideoRef.current.play().catch((err) => {
+        console.error("Remote video play failed:", err);
+      });
     }
   }, [remoteStream, callState]);
 
@@ -53,7 +59,7 @@ function VideoCallOverlay() {
   const person = getCallingInfo();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md md:p-4 animate-fadeIn">
       {/* 1. DIALING STATE */}
       {callState === "calling" && person && (
         <div className="bg-slate-900/90 border border-slate-700/50 rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col items-center space-y-6 text-center">
@@ -129,7 +135,7 @@ function VideoCallOverlay() {
 
       {/* 4. CONNECTED STATE */}
       {callState === "connected" && (
-        <div className="w-full max-w-4xl h-[85vh] md:h-[650px] bg-slate-900/95 border border-slate-800 rounded-3xl overflow-hidden relative shadow-2xl flex flex-col justify-between">
+        <div className="w-full h-full md:max-w-4xl md:h-[650px] bg-slate-900/95 md:border md:border-slate-800 md:rounded-3xl overflow-hidden relative shadow-2xl flex flex-col justify-between">
           {/* Main Remote Video */}
           <div className="absolute inset-0 bg-slate-950 flex items-center justify-center">
             {remoteStream ? (
