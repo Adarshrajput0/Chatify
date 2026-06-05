@@ -183,8 +183,6 @@ export const useCallStore = create((set, get) => {
           iceServers: [
             { urls: "stun:stun.l.google.com:19302" },
             { urls: "stun:stun1.l.google.com:19302" },
-            { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
-            { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
           ],
         });
 
@@ -193,11 +191,7 @@ export const useCallStore = create((set, get) => {
         });
 
         pc.ontrack = (event) => {
-          set((state) => {
-            const currentStream = state.remoteStream || new MediaStream();
-            currentStream.addTrack(event.track);
-            return { remoteStream: currentStream, callState: "connected" };
-          });
+          set({ remoteStream: event.streams[0], callState: "connected" });
           get().startCallTimer();
         };
 
@@ -239,8 +233,6 @@ export const useCallStore = create((set, get) => {
             iceServers: [
               { urls: "stun:stun.l.google.com:19302" },
               { urls: "stun:stun1.l.google.com:19302" },
-              { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
-              { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" }
             ],
           });
 
@@ -249,11 +241,7 @@ export const useCallStore = create((set, get) => {
           });
 
           pc.ontrack = (event) => {
-            set((state) => {
-              const currentStream = state.remoteStream || new MediaStream();
-              currentStream.addTrack(event.track);
-              return { remoteStream: currentStream, callState: "connected" };
-            });
+            set({ remoteStream: event.streams[0], callState: "connected" });
             get().startCallTimer();
           };
 
@@ -415,11 +403,7 @@ export const useCallStore = create((set, get) => {
           });
 
           pc.ontrack = (event) => {
-            set((state) => {
-              const currentStream = state.remoteStream || new MediaStream();
-              currentStream.addTrack(event.track);
-              return { remoteStream: currentStream, callState: "connected" };
-            });
+            set({ remoteStream: event.streams[0], callState: "connected" });
             get().startCallTimer();
           };
 
