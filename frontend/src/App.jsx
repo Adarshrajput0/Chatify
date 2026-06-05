@@ -80,7 +80,7 @@ function App() {
   if (!isLoaded || isCheckingAuth) return <PageLoader />;
 
   return (
-    <div className="h-screen w-screen bg-slate-900 relative overflow-hidden">
+    <div className="h-[100dvh] w-screen bg-slate-900 relative overflow-hidden">
       {/* Background decorators */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
       <div className="absolute top-0 -left-4 size-96 bg-pink-500 opacity-20 blur-[100px] pointer-events-none" />
@@ -95,7 +95,7 @@ function App() {
           <Route
             path="/login"
             element={!authUser ? (
-              <div className="w-full max-w-5xl px-4">
+              <div className="w-full h-full md:max-w-5xl md:px-4 flex items-center justify-center">
                 <LoginPage />
               </div>
             ) : <Navigate to="/" />}
@@ -103,7 +103,7 @@ function App() {
           <Route
             path="/signup"
             element={!authUser ? (
-              <div className="w-full max-w-5xl px-4">
+              <div className="w-full h-full md:max-w-5xl md:px-4 flex items-center justify-center">
                 <SignUpPage />
               </div>
             ) : <Navigate to="/" />}

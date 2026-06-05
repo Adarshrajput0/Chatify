@@ -21,7 +21,7 @@ function ChatPage() {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center md:p-4">
-      <div className="w-full h-full md:max-w-6xl md:h-[calc(100vh-2rem)]">
+      <div className="w-full h-full md:max-w-6xl md:h-[calc(100dvh-2rem)]">
         <BorderAnimatedContainer>
 
           {/* ── COLLAPSED ICON RAIL (desktop only, when chat is open) ── */}

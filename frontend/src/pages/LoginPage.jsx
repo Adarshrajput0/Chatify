@@ -5,12 +5,12 @@ import { SignIn } from "@clerk/react";
 
 function LoginPage() {
   return (
-    <div className="w-full flex items-center justify-center p-4 bg-slate-900">
-      <div className="relative w-full max-w-6xl md:h-[800px] h-auto">
+    <div className="w-full h-full flex items-center justify-center md:p-4 bg-slate-900">
+      <div className="relative w-full h-full max-w-6xl md:h-[800px]">
         <BorderAnimatedContainer>
-          <div className="w-full flex flex-col md:flex-row">
+          <div className="w-full h-full flex flex-col md:flex-row">
             {/* FORM COLUMN - LEFT SIDE */}
-            <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-slate-600/30">
+            <div className="w-full md:w-1/2 h-full p-8 flex items-center justify-center md:border-r border-slate-600/30">
               <div className="w-full max-w-md">
                 {/* HEADING TEXT */}
                 <div className="text-center mb-8">
